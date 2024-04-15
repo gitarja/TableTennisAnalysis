@@ -1,0 +1,24 @@
+digraph {
+	over [label="over
+~
+Normal" shape=ellipse]
+	control [label="control
+~
+Normal" shape=ellipse]
+	under [label="under
+~
+Normal" shape=ellipse]
+	sigma [label="sigma
+~
+Uniform" shape=ellipse]
+	subgraph cluster64 {
+		likelihood [label="likelihood
+~
+Normal" shape=ellipse style=filled]
+		label=64 labeljust=r labelloc=b style=rounded
+	}
+	over -> likelihood
+	control -> likelihood
+	under -> likelihood
+	sigma -> likelihood
+}

@@ -16,9 +16,6 @@ import os
 from imblearn.metrics import geometric_mean_score
 from Conf import  x_important
 
-
-os.environ["PATH"] += os.pathsep + 'C:\\Program Files\\Graphviz\\bin'
-
 #case we have a sequence of ACGT
 np.random.seed(1945)
 
@@ -106,7 +103,7 @@ bootstrap_results = np.zeros((number_of_bootstrap * 5, len(x_important)))
 index=0
 # load features
 for i in range(len(subject_train)):
-    path = "F:\\users\\prasetia\\data\\TableTennis\\Experiment_1_cooperation\\cleaned\\summary\\single_episode_features.pkl"
+    path = "F:\\users\\prasetia\\data\\TableTennis\\Experiment_1_cooperation\\cleaned\\summary\\ETRA2024_results_backup\\single_episode_features.pkl"
 
     train_subject = subject_train[i]
     test_subject = subject_test[i]
@@ -126,7 +123,7 @@ for i in range(len(subject_train)):
             clf = trainXGB(X_train.iloc[bootstrap_indices, :], y_train[bootstrap_indices])
 
         # compute shap
-        explainer = shap.TreeExplainer(clf)
+        explainer = shap.explainers.GPUTreeExplainer(clf)
         shap_values = explainer.shap_values(X_test)
         # add shap values
         shap_values_list.append(shap_values)

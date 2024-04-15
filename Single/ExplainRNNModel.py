@@ -1,4 +1,5 @@
 import numpy as np
+import shap
 from torch.utils.data import DataLoader
 from Single.FeaturesReader import SequentialFeaturesReader
 from Validation.CrossValidation import SubjectCrossValidation
@@ -8,7 +9,7 @@ from Conf import x_important, x_episode_columns
 
 from Lib import createDir
 # import shap
-from captum.attr import GradientShap, DeepLiftShap, ShapleyValueSampling
+from captum.attr import GradientShap, DeepLiftShap, KernelShap
 import pandas as pd
 from Conf import single_results_path
 import gc
@@ -17,14 +18,14 @@ torch.backends.cudnn.enabled=False
 
 torch.manual_seed(3)
 
-path = "F:\\users\\prasetia\\data\\TableTennis\\Experiment_1_cooperation\\cleaned\\summary\\single_episode_features.pkl"
-scenario = "all-features"
+path = "F:\\users\\prasetia\\data\\TableTennis\\Experiment_1_cooperation\\cleaned\\summary\\single_combined\\single_episode_features_combined.pkl"
+scenario = "important"
 MODEL_PATH = "..\\CheckPoints\\Single\\" + scenario + "\\"
 # check GPU
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 features_reader = SubjectCrossValidation()
-subject_train, subject_test = features_reader.getTrainTestData(2)
+subject_train, subject_test = features_reader.getTrainTestData(1)
 batch_size = 256
 n_window = 3
 n_stride = 3
@@ -33,7 +34,7 @@ X_test_list_disp = []
 shap_values_list = []
 labels = np.expand_dims(np.array([str(i) for i in range(n_window)]), -1)
 model_name = "LSTM"
-features_group = "all"
+features_group = "important"
 features = x_important
 for i in range(len(subject_train)):
     CHECK_POINT_BEST_PATH = MODEL_PATH + "model_best_"+str(i)+".pkl"
@@ -96,8 +97,11 @@ for i in range(len(subject_train)):
     # compute shap
 
     e = GradientShap(model)
+    shap_values = e.attribute(X_test_all, baselines=X_train_all)
 
-    shap_values = e.attribute(X_test_all, baselines=torch.mean(X_train_all, dim=0, keepdim=True))
+    # explainer = shap.GradientExplainer(model, torch.mean(X_train_all, dim=0, keepdim=True))
+    # shap_values = explainer.shap_values(X_test_all, nsamples=100)
+
     shap_values_list.append(shap_values.detach().cpu().numpy())
 
     # # append results

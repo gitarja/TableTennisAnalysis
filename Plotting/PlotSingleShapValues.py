@@ -10,8 +10,8 @@ from Visualization.SHAPPlots import plotSHAP
 np.random.seed(1945)
 
 
-model = "lstm"
-features_group = "all"
+model = "LSTM"
+features_group = "important"
 features = x_important
 # Then, "ALWAYS use sans-serif fonts"
 matplotlib.rcParams['font.family'] = "arial"
@@ -40,14 +40,14 @@ df = pd.DataFrame(data)
 
 df.to_csv(single_results_path + "shap_"+model + "_" + features_group +"_2_values.csv")
 
-# idc = np.array([features.index(c) for c in features])
-#
-# # shap.summary_plot(shap_values_all, X_test_all)
-# shap.summary_plot(shap_values_all, X_test_all, plot_type="bar", max_display=len(features), show=False)
-#
-#
-# plt.savefig(results_path + "images\\bar_"+model+"_lr.png", format='png')
-# plt.close()
-#
-#
-# plotSHAP(shap_values_all,X_test_all, features, results_path + "images\\", prefix=model)
+idc = np.array([features.index(c) for c in features])
+
+# shap.summary_plot(shap_values_all, X_test_all)
+shap.summary_plot(shap_values_all, X_test_all, plot_type="bar", max_display=len(features), show=False)
+
+
+plt.savefig(results_path + "images\\bar_"+model+"_lr.png", format='png')
+plt.close()
+
+
+plotSHAP(shap_values_all,X_test_all, features, results_path + "images\\", prefix=model)

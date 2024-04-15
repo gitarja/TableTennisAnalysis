@@ -6,6 +6,7 @@ import numpy as np
 from Conf import double_summary_path
 import torch
 from torch.utils.data import Dataset
+from sklearn.impute import KNNImputer
 
 np.random.seed(1945)
 
@@ -33,7 +34,7 @@ class DoubleFeaturesReader:
         df = df.loc[df["success"] != -1]
 
         # exclude episode without a pair
-        df = df.loc[df["pair_idx"] != -1]
+        # df = df.loc[df["pair_idx"] != -1]
         self.n_window = n_window
         self.df = df
 
@@ -94,12 +95,13 @@ class DoubleFeaturesReader:
 
     def normalizeDF(self, df, display=False):
         df = df.copy()
-
+        imputer = KNNImputer(n_neighbors=5)
         if display == False:
             df.loc[:, normalize_x_double_episode_columns] = (df.loc[:,
                                                              normalize_x_double_episode_columns] - self.mean) / self.std
+            df.loc[:, x_double_features_column] = imputer.fit_transform(df.loc[:, x_double_features_column])
 
-            # df = df.fillna(0)
+
         return df
 
     def getIndividualObservationData(self, display=False, features_group="all", label=False):

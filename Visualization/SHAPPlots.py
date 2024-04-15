@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 
 def plotSHAP(shap_values, x, columns, results_path, prefix=""):
     sns.set_theme()
+    sns.set(font_scale=1.7)
     sns.set_style("white")
     # combing shap and x
     shap_columns = ["shap_"+c for c in columns]
@@ -22,6 +23,8 @@ def plotSHAP(shap_values, x, columns, results_path, prefix=""):
 
         g.set(ylabel='SHAP values')
         plt.axhline(y=0., color="black", linestyle=":")
+        if c=="hitter_hit_to_bouncing_point":
+            g.set_xlim(0, 20)
 
         sns.despine()
         # plt.show()

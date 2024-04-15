@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from FeatureReader import DoubleFeaturesReader
 from sklearn.metrics import matthews_corrcoef, balanced_accuracy_score, f1_score, roc_curve, auc
-from imblearn.under_sampling import CondensedNearestNeighbour
+
 from sklearn.metrics import confusion_matrix
 import xgboost
 from xgboost import plot_tree
@@ -13,6 +13,9 @@ from Conf import double_results_path
 from sklearn.model_selection import train_test_split
 import pickle
 import os
+from imblearn.metrics import geometric_mean_score
+from corr_shap import CorrExplainer
+from shap.utils._legacy import LogitLink
 os.environ["PATH"] += os.pathsep + 'C:\\Program Files\\Graphviz\\bin'
 
 #case we have a sequence of ACGT
@@ -32,9 +35,8 @@ def trainXGB(X, y):
         "eta": 0.001,
         "objective": "binary:logistic",
         "subsample": 0.5,
-        # "base_score": np.mean(y_train),
         "max_delta_step": 5,
-        "max_depth": 10,
+        "max_depth": 5,
         "eval_metric": "logloss",
         "alpha":0.5,
         "scale_pos_weight": np.sum(y_train == 0 ) / (np.sum(y_train == 1 ) * 1.1)
@@ -70,12 +72,14 @@ def evaluateModel(model, X_test, y_test):
 
     f1 = f1_score(y_test, predictions, average='weighted')
 
+    g_mean = geometric_mean_score(y_test, predictions)
+
     print("ACC", acc)
     print("MCC", mcc)
     print("-------------------------")
-    return mcc, cm, acc, auc_score, f1
+    return mcc, cm, acc, auc_score, f1, g_mean
 
-mcc_list, cm_list, acc_list, auc_list, f1_list = [], [], [], [], []
+mcc_list, cm_list, acc_list, auc_list, f1_list, gmean_list = [], [], [], [], [], []
 shap_values_list, shap_interaction_list = [], []
 X_test_list = []
 X_test_display_list = []
@@ -94,37 +98,40 @@ for i in range(len(subject_train)):
 
     X_train, y_train, x_column = features_reader_train.getIndividualObservationData(display=True, features_group=features_group)
 
-    # print('Original dataset shape %s' % Counter(y_train))
-    # X_res, y_res = cnn.fit_resample(X_train, y_train)
-    # print('Resampled dataset shape %s' % Counter(y_res))
-
     X_test, y_test, _ = features_reader_test.getIndividualObservationData(display=True, features_group=features_group)
 
-    # clf = BalancedRandomForestClassifier(
-    #     sampling_strategy="all", replacement=True, random_state=0, criterion="entropy", max_depth=25, n_estimators=400, bootstrap=False, class_weight="balanced")
+    X_test_disp, _, _ = features_reader_test.getIndividualObservationData(display=True, features_group=features_group)
+
+
 
 
     clf = trainXGB(X_train, y_train)
 
-    mcc, cm, acc, auc_score, f1 = evaluateModel(clf, X_test, y_test)
+    mcc, cm, acc, auc_score, f1, g_mean = evaluateModel(clf, X_test, y_test)
 
     mcc_list.append(mcc)
     cm_list.append(cm)
     acc_list.append(acc)
     f1_list.append(f1)
     auc_list.append(auc_score)
+    gmean_list.append(g_mean)
 
-    # compute shap
-    X = np.concatenate([X_train, X_test])
-    explainer = shap.TreeExplainer(clf)
-    shap_values = explainer.shap_values(X_test)
-    shap_interaction_values = explainer.shap_interaction_values(X_test)
+    # # compute shap
+    # X = np.concatenate([X_train, X_test])
+    # explainer = shap.TreeExplainer(clf, data=X_train, feature_perturbation="interventional")
+    # shap_values = explainer.shap_values(X_test)
+
+
+
+    X_background = shap.kmeans(X_train.values, k=15).data
+    # clf.set_param({"device": "cuda:0"})
+    explainer = CorrExplainer(clf.inplace_predict, X_background, sampling="gauss+empirical", link=LogitLink())
+    shap_values = explainer.shap_values(X_test.values)
 
     # append test data
-    X_test_list.append(X_test)
+    X_test_list.append(X_test_disp)
     # append results
     shap_values_list.append(shap_values)
-    shap_interaction_list.append(shap_interaction_values)
 
 
 
@@ -136,18 +143,18 @@ cm_all = np.array(cm_list)
 acc_all = np.vstack(acc_list)
 f1_all = np.array(f1_list)
 auc_all = np.array(auc_list)
+gmean_all = np.array(gmean_list)
 
 print(np.average(acc_all))
 print(np.average(mcc_all))
+print(np.average(gmean_all))
 
 
-# # save shap
+# # # save shap
 X_test_all = pd.concat(X_test_list)
 shap_values_all = np.vstack(shap_values_list)
-shap_interaction_all = np.vstack(shap_interaction_list)
 results_path  = double_results_path + "shap_values\\"
 np.save(results_path  + "x_gboost_double_shap_values_"+features_group+".npy", shap_values_all)
-np.save(results_path + "x_gboost_double_shap_interaction_"+features_group+".npy", shap_interaction_all)
 X_test_all.to_pickle(results_path + "x_gboost_double_X_test_"+features_group+".pkl")
 #
 np.save(results_path + "x_gboost_double_MCC_"+features_group+".npy", mcc_all)

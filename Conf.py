@@ -26,9 +26,11 @@ x_episode_columns = [
 "pr_p3_fx",
 "pr_p3_fx_du",
 "pr_p3_fx_on",
-"pr_p3_phaseDA",
-# # bouncing point
-"bouncing_point_to_cent",
+"pr_p3_stability",
+"hit_to_bouncing_point",
+# "pr_p3_phaseDA",
+# # # bouncing point
+# "bouncing_point_to_cent",
 
 ]
 
@@ -43,7 +45,7 @@ x_perception = [
 "pr_p2_sf",
 "pr_p3_fx_du",
 "pr_p3_fx_on",
-"pr_p3_phaseDA",
+"pr_p3_stability",
 
 ]
 
@@ -69,7 +71,7 @@ x_important = [
 "pr_p3_fx_du",
 "pr_p3_fx_on",
 "pr_p3_phaseDA",
-# bouncing point
+# # bouncing point
 "bouncing_point_to_cent",
 ]
 
@@ -97,7 +99,7 @@ normalize_x_episode_columns =  [
     "im_rb_ang_collision",
     "im_rb_dist",
     "im_rack_wrist_dist",
-    # bouncing point
+    # # bouncing point
     "bouncing_point_to_cent",
 ]
 
@@ -107,289 +109,189 @@ x_double_features_all_column = [
     "team_max_seq",
     "team_avg_seq",
 
+    # gaze event of receiver
+    "receiver_pr_p1_al",
+    "receiver_pr_p2_al",
+    "receiver_pr_p3_fx",
+    "receiver_pr_p1_cs",
+    "receiver_pr_p2_cs",
+    "receiver_pr_p3_cs",
+    "receiver_pr_p1_al_onset",
+    "receiver_pr_p1_al_prec",
+    "receiver_pr_p1_al_mag",
+    "receiver_pr_p2_al_onset",
+    "receiver_pr_p2_al_prec",
+    "receiver_pr_p2_al_mag",
+    "receiver_pr_p3_fx_onset",
+    "receiver_pr_p3_fx_duration",
+    "receiver_pr_p3_stability",
+
     # gaze event of hitter
     "hitter_pr_p1_al",
     "hitter_pr_p2_al",
     "hitter_pr_p3_fx",
-    "hitter_pr_p1_sf",
-    "hitter_pr_p2_sf",
-    "hitter_pr_p1_al_on",
-    "hitter_pr_p1_al_miDo",
-    "hitter_pr_p1_al_gM",
-    "hitter_pr_p2_al_on",
-    "hitter_pr_p2_al_miDo",
-    "hitter_pr_p2_al_gM",
-    "hitter_pr_p3_fx_on",
-    "hitter_pr_p3_fx_du",
-    "hitter_pr_p3_phaseDA",
-
-    # gaze event of observer
-    "observer_pr_p1_al",
-    "observer_pr_p2_al",
-    "observer_pr_p3_fx",
-    "observer_pr_p1_sf",
-    "observer_pr_p2_sf",
-    "observer_pr_p1_al_on",
-    "observer_pr_p1_al_miDo",
-    "observer_pr_p1_al_gM",
-    "observer_pr_p2_al_on",
-    "observer_pr_p2_al_miDo",
-    "observer_pr_p2_al_gM",
-    "observer_pr_p3_fx_on",
-    "observer_pr_p3_fx_du",
-    "observer_pr_p3_phaseDA",
+    "hitter_pr_p1_cs",
+    "hitter_pr_p2_cs",
+    "hitter_pr_p3_cs",
+    "hitter_pr_p1_al_onset",
+    "hitter_pr_p1_al_prec",
+    "hitter_pr_p1_al_mag",
+    "hitter_pr_p2_al_onset",
+    "hitter_pr_p2_al_prec",
+    "hitter_pr_p2_al_mag",
+    "hitter_pr_p3_fx_onset",
+    "hitter_pr_p3_fx_duration",
+    "hitter_pr_p3_stability",
 
     # Joint attention
-    "ja_p1_minDu",
-    "ja_p1_maxDu",
-    "ja_p1_avgDu",
-    "ja_p1_per",
+    # "ja_p23_minDu",
+    # "ja_p23_maxDu",
+    # "ja_p23_avgDu",
+    "ja_percentage",
 
-    "ja_p23_minDu",
-    "ja_p23_maxDu",
-    "ja_p23_avgDu",
-    "ja_p23_per",
-
-    # Gaze coorientation
-    "gc_p1_crossCorr",
-    "gc_p1_crossCorrLag",
-    # "gc_p1_crossCorrAVG",
-    "gc_p1_crossCorrVel",
-    "gc_p1_crossCorrVelLag",
-    # "gc_p1_crossCorrVelAVG",
-    "gc_p1_phaseSync",
-    # "gc_p1_mi",
-    # "gc_p1_te",
-    # "gc_p1_freq_lw",
-    # "gc_p1_freq_mw",
-    # "gc_p1_freq_hw",
-    # "gc_p1_freq_lhw",
-
-    "gc_p23_crossCorr",
-    "gc_p23_crossCorrLag",
-    # "gc_p23_crossCorrAVG",
-    "gc_p23_crossCorrVel",
-    "gc_p23_crossCorrVelLag",
-    # "gc_p23_crossCorrVelAVG",
-    "gc_p23_phaseSync",
-    # "gc_p23_mi",
-    # "gc_p23_te",
-    # "gc_p23_freq_lw",
-    # "gc_p23_freq_mw",
-    # "gc_p23_freq_hw",
-    # "gc_p23_freq_lhw",
 
 
     # Forward swing and impact
-    "hitter_ec_start_fs",
-    "hitter_ec_fs_ball_racket_ratio",
-    "hitter_ec_fs_ball_racket_dir",
-    "hitter_ec_fs_ball_rball_dist",
-    "hitter_im_racket_force",
-    "hitter_im_ball_force",
-    "hitter_im_rb_ang_collision",
-    "hitter_im_rb_dist",
-    "hitter_im_rack_wrist_dist",
-    "hitter_spatial_position",  # only for double
+    "receiver_ec_start_fs",
+    "receiver_ec_fs_ball_racket_ratio",
+    "receiver_ec_fs_ball_racket_dir",
+    "receiver_ec_fs_ball_rball_dist",
+    "receiver_im_racket_force",
+    "receiver_im_ball_force",
+    "receiver_im_rb_ang_collision",
+    "receiver_im_rb_dist",
+    "receiver_im_rack_wrist_dist",
 
-    # Pose sim swing and impact
-    # "dtw_p23_sim",
-    "lcc_p23_sim",
 
-    # Features relative diff
-    "rdiff_spatial_position",  # only for double
-    "rdiff_bounce_dist",
-    "rdiff_ec_start_fs",
-    "rdiff_ec_fs_ball_racket_ratio",
-    "rdiff_im_rack_wrist_dist",
+    # bouncing point
+    "hitter_hit_to_bouncing_point",
+    "receiver_racket_to_root",
+    "team_spatial_position",  # only for double
+
 
 ]
 
 
 x_double_features_column = [
+    # gaze event of receiver
+    "receiver_pr_p1_al",
+    "receiver_pr_p2_al",
+    "receiver_pr_p3_fx",
+    "receiver_pr_p1_cs",
+    "receiver_pr_p2_cs",
+    "receiver_pr_p3_cs",
+    "receiver_pr_p1_al_onset",
+    "receiver_pr_p1_al_prec",
+    "receiver_pr_p1_al_mag",
+    "receiver_pr_p2_al_onset",
+    "receiver_pr_p2_al_prec",
+    "receiver_pr_p2_al_mag",
+    "receiver_pr_p3_fx_onset",
+    "receiver_pr_p3_fx_duration",
+    "receiver_pr_p3_stability",
+
     # gaze event of hitter
     "hitter_pr_p1_al",
     "hitter_pr_p2_al",
     "hitter_pr_p3_fx",
-    "hitter_pr_p1_sf",
-    "hitter_pr_p2_sf",
-    "hitter_pr_p1_al_on",
-    "hitter_pr_p1_al_miDo",
-    "hitter_pr_p1_al_gM",
-    "hitter_pr_p2_al_on",
-    "hitter_pr_p2_al_miDo",
-    "hitter_pr_p2_al_gM",
-    "hitter_pr_p3_fx_on",
-    "hitter_pr_p3_fx_du",
-    "hitter_pr_p3_phaseDA",
-
-    # gaze event of observer
-    "observer_pr_p1_al",
-    "observer_pr_p2_al",
-    "observer_pr_p3_fx",
-    "observer_pr_p1_sf",
-    "observer_pr_p2_sf",
-    "observer_pr_p1_al_on",
-    "observer_pr_p1_al_miDo",
-    "observer_pr_p1_al_gM",
-    "observer_pr_p2_al_on",
-    "observer_pr_p2_al_miDo",
-    "observer_pr_p2_al_gM",
-    "observer_pr_p3_fx_on",
-    "observer_pr_p3_fx_du",
-    "observer_pr_p3_phaseDA",
+    "hitter_pr_p1_cs",
+    "hitter_pr_p2_cs",
+    "hitter_pr_p3_cs",
+    "hitter_pr_p1_al_onset",
+    "hitter_pr_p1_al_prec",
+    "hitter_pr_p1_al_mag",
+    "hitter_pr_p2_al_onset",
+    "hitter_pr_p2_al_prec",
+    "hitter_pr_p2_al_mag",
+    "hitter_pr_p3_fx_onset",
+    "hitter_pr_p3_fx_duration",
+    "hitter_pr_p3_stability",
 
     # Joint attention
-    "ja_p1_minDu",
-    "ja_p1_maxDu",
-    "ja_p1_avgDu",
-    "ja_p1_per",
+    # "ja_p23_minDu",
+    # "ja_p23_maxDu",
+    # "ja_p23_avgDu",
+    "ja_percentage",
 
-    "ja_p23_minDu",
-    "ja_p23_maxDu",
-    "ja_p23_avgDu",
-    "ja_p23_per",
-
-    # Gaze coorientation
-    "gc_p1_crossCorr",
-    "gc_p1_crossCorrLag",
-    # "gc_p1_crossCorrAVG",
-    "gc_p1_crossCorrVel",
-    "gc_p1_crossCorrVelLag",
-    # "gc_p1_crossCorrVelAVG",
-    "gc_p1_phaseSync",
-    # "gc_p1_mi",
-    # "gc_p1_te",
-    "gc_p1_freq_lw",
-    "gc_p1_freq_mw",
-    "gc_p1_freq_hw",
-    # "gc_p1_freq_lhw",
-
-    "gc_p23_crossCorr",
-    "gc_p23_crossCorrLag",
-    # "gc_p23_crossCorrAVG",
-    "gc_p23_crossCorrVel",
-    "gc_p23_crossCorrVelLag",
-    # "gc_p23_crossCorrVelAVG",
-    "gc_p23_phaseSync",
-    # "gc_p23_mi",
-    # "gc_p23_te",
-    "gc_p23_freq_lw",
-    "gc_p23_freq_mw",
-    "gc_p23_freq_hw",
-    # "gc_p23_freq_lhw",
 
 
     # Forward swing and impact
-    "hitter_ec_start_fs",
-    "hitter_ec_fs_ball_racket_ratio",
-    "hitter_ec_fs_ball_racket_dir",
-    "hitter_ec_fs_ball_rball_dist",
-    "hitter_im_racket_force",
-    "hitter_im_ball_force",
-    "hitter_im_rb_ang_collision",
-    "hitter_im_rb_dist",
-    "hitter_im_rack_wrist_dist",
-    "hitter_spatial_position",  # only for double
+    "receiver_ec_start_fs",
+    "receiver_ec_fs_ball_racket_ratio",
+    "receiver_ec_fs_ball_racket_dir",
+    "receiver_ec_fs_ball_rball_dist",
+    "receiver_im_racket_force",
+    "receiver_im_ball_force",
+    "receiver_im_rb_ang_collision",
+    "receiver_im_rb_dist",
+    "receiver_im_rack_wrist_dist",
 
-    # Pose sim swing and impact
-    # "dtw_p23_sim",
-    "lcc_p23_sim",
 
-    # Features relative diff
-    "rdiff_spatial_position",  # only for double
-    "rdiff_bounce_dist",
-    "rdiff_ec_start_fs",
-    "rdiff_ec_fs_ball_racket_ratio",
-    "rdiff_im_rack_wrist_dist",
+    # bouncing point
+    "hitter_hit_to_bouncing_point",
+    "receiver_racket_to_root",
+    "team_spatial_position",  # only for double
+
 ]
 normalize_x_double_episode_columns = [
-    # gaze event of hitter
-    "hitter_pr_p1_al_on",
-    "hitter_pr_p1_al_miDo",
-    "hitter_pr_p1_al_gM",
-    "hitter_pr_p2_al_on",
-    "hitter_pr_p2_al_miDo",
-    "hitter_pr_p2_al_gM",
-    "hitter_pr_p3_fx_on",
-    "hitter_pr_p3_fx_du",
-    "hitter_pr_p3_phaseDA",
+    # gaze event of receiver
+    # "receiver_pr_p1_al",
+    # "receiver_pr_p2_al",
+    # "receiver_pr_p3_fx",
+    # "receiver_pr_p1_cs",
+    # "receiver_pr_p2_cs",
+    # "receiver_pr_p3_cs",
+    # "receiver_pr_p1_al_onset",
+    # "receiver_pr_p1_al_prec",
+    # "receiver_pr_p1_al_mag",
+    # "receiver_pr_p2_al_onset",
+    # "receiver_pr_p2_al_prec",
+    # "receiver_pr_p2_al_mag",
+    # "receiver_pr_p3_fx_onset",
+    # "receiver_pr_p3_fx_duration",
+    # "receiver_pr_p3_stability",
 
-    # gaze event of observer
-    "observer_pr_p1_al_on",
-    "observer_pr_p1_al_miDo",
-    "observer_pr_p1_al_gM",
-    "observer_pr_p2_al_on",
-    "observer_pr_p2_al_miDo",
-    "observer_pr_p2_al_gM",
-    "observer_pr_p3_fx_on",
-    "observer_pr_p3_fx_du",
-    "observer_pr_p3_phaseDA",
+    # gaze event of hitter
+    # "hitter_pr_p1_al",
+    # "hitter_pr_p2_al",
+    # "hitter_pr_p3_fx",
+    # "hitter_pr_p1_cs",
+    # "hitter_pr_p2_cs",
+    # "hitter_pr_p3_cs",
+    # "hitter_pr_p1_al_onset",
+    # "hitter_pr_p1_al_prec",
+    # "hitter_pr_p1_al_mag",
+    # "hitter_pr_p2_al_onset",
+    # "hitter_pr_p2_al_prec",
+    # "hitter_pr_p2_al_mag",
+    # "hitter_pr_p3_fx_onset",
+    # "hitter_pr_p3_fx_duration",
+    # "hitter_pr_p3_stability",
 
     # Joint attention
-    "ja_p1_minDu",
-    "ja_p1_maxDu",
-    "ja_p1_avgDu",
-    "ja_p1_per",
-
-    "ja_p23_minDu",
-    "ja_p23_maxDu",
-    "ja_p23_avgDu",
-    "ja_p23_per",
-
-    # Gaze coorientation
-    "gc_p1_crossCorr",
-    "gc_p1_crossCorrLag",
-    # "gc_p1_crossCorrAVG",
-    "gc_p1_crossCorrVel",
-    "gc_p1_crossCorrVelLag",
-    # "gc_p1_crossCorrVelAVG",
-    "gc_p1_phaseSync",
-    # "gc_p1_mi",
-    # "gc_p1_te",
-    "gc_p1_freq_lw",
-    "gc_p1_freq_mw",
-    "gc_p1_freq_hw",
-    # "gc_p1_freq_lhw",
-
-    "gc_p23_crossCorr",
-    "gc_p23_crossCorrLag",
-    # "gc_p23_crossCorrAVG",
-    "gc_p23_crossCorrVel",
-    "gc_p23_crossCorrVelLag",
-    # "gc_p23_crossCorrVelAVG",
-    "gc_p23_phaseSync",
-    # "gc_p23_mi",
-    # "gc_p23_te",
-    "gc_p23_freq_lw",
-    "gc_p23_freq_mw",
-    "gc_p23_freq_hw",
-    # "gc_p23_freq_lhw",
+    # "ja_p23_minDu",
+    # "ja_p23_maxDu",
+    # "ja_p23_avgDu",
+    # "ja_percentage",
 
 
 
     # Forward swing and impact
-    "hitter_ec_start_fs",
-    "hitter_ec_fs_ball_racket_ratio",
-    "hitter_ec_fs_ball_racket_dir",
-    "hitter_ec_fs_ball_rball_dist",
-    "hitter_im_racket_force",
-    "hitter_im_ball_force",
-    "hitter_im_rb_ang_collision",
-    "hitter_im_rb_dist",
-    "hitter_im_rack_wrist_dist",
-    "hitter_spatial_position",  # only for double
+    # "receiver_ec_start_fs",
+    # "receiver_ec_fs_ball_racket_ratio",
+    "receiver_ec_fs_ball_racket_dir",
+    # "receiver_ec_fs_ball_rball_dist",
+    "receiver_im_racket_force",
+    "receiver_im_ball_force",
+    # "receiver_im_rb_ang_collision",
+    # "receiver_im_rb_dist",
+    # "receiver_im_rack_wrist_dist",
 
-    # Pose sim swing and impact
-    # "dtw_p23_sim",
-    "lcc_p23_sim",
 
-    # Features relative diff
-    "rdiff_spatial_position",  # only for double
-    "rdiff_bounce_dist",
-    "rdiff_ec_start_fs",
-    "rdiff_ec_fs_ball_racket_ratio",
-    "rdiff_im_rack_wrist_dist",
+    # bouncing point
+    # "hitter_hit_to_bouncing_point",
+    # "receiver_racket_to_root",
+    # "team_spatial_position",  # only for double
 
 ]
 
@@ -401,7 +303,7 @@ excluded_subject = ["SE010C", "SE011A", "SE029C", "SE029A", "SE030B", "SE033A", 
                     "SE018A", "SE017C"]
 
 results_path = "F:\\users\\prasetia\\data\\TableTennis\\Experiment_1_cooperation\\cleaned\\summary\\"
-single_results_path = results_path + "single\\"
+single_results_path = results_path + "single_combined\\"
 double_results_path = results_path + "double\\"
 double_results_avg_path = results_path + "double\\avg_features\\"
 single_summary_path = results_path + "single_summary.csv"

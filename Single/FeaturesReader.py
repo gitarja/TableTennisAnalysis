@@ -12,6 +12,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 from Conf import single_summary_path
 from torch.utils.data import Dataset
+from sklearn.impute import KNNImputer
 np.random.seed(1945)
 
 
@@ -108,11 +109,13 @@ class SingleFeaturesReader:
 
     def normalizeDF(self, df, display=False):
         df = df.copy()
+        imputer = KNNImputer(n_neighbors=5)
 
         if display == False:
             df.loc[:, normalize_x_episode_columns] = (df.loc[:, normalize_x_episode_columns] - self.mean) / self.std
+            df.loc[:, x_episode_columns] = imputer.fit_transform(df.loc[:, x_episode_columns])
 
-            df = df.fillna(0)
+
         return df
 
     def getIndividualObservationData(self, display=False, features_group="all", label=False):
@@ -125,7 +128,7 @@ class SingleFeaturesReader:
         per : perception
         :return:
         '''
-        df = self.normalizeDF(self.df, display)
+        df = self.df
         x_column = x_episode_columns
         if features_group == "important":
             x_column = x_important
@@ -133,9 +136,7 @@ class SingleFeaturesReader:
 
 
         if display == False:
-            df.loc[:, normalize_x_episode_columns] = (df.loc[:, normalize_x_episode_columns] - self.mean) / self.std
-
-            df = df.fillna(df.mean())
+            df = self.normalizeDF(self.df, display)
 
         if label:
             x_column = x_column + y_episode_column
@@ -148,7 +149,7 @@ class SingleFeaturesReader:
 
 class SequentialFeaturesReader(Dataset):
 
-    def __init__(self, file_path="", include_subjects=["test"], n_window=3, n_stride = 5, training=False, display=False):
+    def __init__(self, file_path="", include_subjects=["test"], n_window=3, n_stride = 5, training=False, display=False, bagging=False):
         df = pd.read_pickle(file_path)
         self.columns = x_important
         self.mean = np.nanmean(
@@ -166,7 +167,16 @@ class SequentialFeaturesReader(Dataset):
         self.df = df
         self.training = training
 
-        self.X, self.y = self.getAllData()
+        X, y = self.getAllData()
+        if bagging:
+            bootstrap_indices = np.random.choice(X.shape[0], size=int(X.shape[0] * 0.75), replace=True)
+            self.X = X[bootstrap_indices]
+            self.y = y[bootstrap_indices]
+        else:
+
+            self.X = X
+            self.y = y
+
 
     def __len__(self):
         return len(self.X)
@@ -181,7 +191,9 @@ class SequentialFeaturesReader(Dataset):
     def normalizeDF(self, df):
         df = df.copy()
 
+
         df.loc[:, normalize_x_episode_columns] = (df.loc[:, normalize_x_episode_columns] - self.mean) / self.std
+        # df.loc[:, x_important] = imputer.fit_transform(df.loc[:, x_important])
         df = df.fillna(df.mean())
 
         return df

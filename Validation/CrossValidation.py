@@ -43,6 +43,11 @@ class DoubleSubjectCrossValidation:
 
         return subject_train, subject_test
 
+
+    def getSummary(self):
+        return self.df
+
+
 class SubjectCrossValidation:
 
 
@@ -71,6 +76,12 @@ class SubjectCrossValidation:
                 subject_test.append(test_data.loc[:, "Subject1"].values)
 
         return subject_train, subject_test
+
+    def getSummary(self):
+        return self.df
+
+
+
 
 
 

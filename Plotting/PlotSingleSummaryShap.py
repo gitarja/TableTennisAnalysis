@@ -12,7 +12,7 @@ np.random.seed(1945)
 
 model = "LSTM"
 features = x_important
-features_group="all"
+features_group="important"
 # Then, "ALWAYS use sans-serif fonts"
 matplotlib.rcParams['font.family'] = "arial"
 results_path = single_results_path + "shap_values\\"
@@ -32,5 +32,5 @@ X_test_all =  pd.concat(x_test_list)
 
 shap.summary_plot(shap_values_all, X_test_all, max_display=len(features), alpha=0.1, show=False)
 
-plt.savefig("F:\\users\\prasetia\\data\\TableTennis\\Experiment_1_cooperation\\cleaned\\summary\\single\\shap_values\\images\\LSTM_2-important-summary.pdf", format="pdf", transparent=True)
+plt.savefig(results_path+"\\images\\"+model+"_" + features_group+ "_"+"-summary-test.pdf", format="pdf", transparent=True)
 

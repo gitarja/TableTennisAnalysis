@@ -13,14 +13,14 @@ from Lib import createDir
 
 torch.manual_seed(3)
 
-path = "F:\\users\\prasetia\\data\\TableTennis\\Experiment_1_cooperation\\cleaned\\summary\\single_episode_features.pkl"
-scenario = "all-features"
+path = "F:\\users\\prasetia\\data\\TableTennis\\Experiment_1_cooperation\\cleaned\\summary\\single_combined\\single_episode_features_combined.pkl"
+scenario = "important"
 MODEL_PATH = "..\\CheckPoints\\Single\\" + scenario + "\\"
 # check GPU
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 features_reader = SubjectCrossValidation()
-subject_train, subject_test = features_reader.getTrainTestData(1)
+subject_train, subject_test = features_reader.getTrainTestData(2)
 batch_size = 64
 n_window = 3
 n_stride = 3
@@ -44,10 +44,10 @@ for i in range(len(subject_train)):
     val_loader = DataLoader(val_dataset, batch_size=batch_size,
                             shuffle=False, num_workers=0)
 
-    model = ActionPerceptionModel(input_dim=len(x_episode_columns), sequence_len=n_window)
+    model = ActionPerceptionModel(input_dim=len(x_important), sequence_len=n_window)
     model.to(device)
     # Set optimizer and loss
-    optimizer = torch.optim.AdamW(model.parameters(), lr=0.0085, betas=(0.9, 0.999), weight_decay=1e-4)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=0.0055, betas=(0.9, 0.999), weight_decay=1e-4)
     scheduler = CosineAnnealingWarmRestarts(optimizer, T_0=3, T_mult=1, eta_min=1e-4)
     loss_fn = Poly1FocalLoss(gamma=2., alpha=.25, num_classes=2, reduction='mean', label_is_onehot=True)
 
@@ -150,17 +150,17 @@ for i in range(len(subject_train)):
             mcc_best = mcc_score
             gam_best = gam_score
 
-            # torch.save({
-            #     'epoch': j,
-            #     'model_state_dict': model.state_dict(),
-            # }, CHECK_POINT_BEST_PATH)
+            torch.save({
+                'epoch': j,
+                'model_state_dict': model.state_dict(),
+            }, CHECK_POINT_BEST_PATH)
 
         else:
             early_stop_idx += 1
-            # torch.save({
-            #     'epoch': j,
-            #     'model_state_dict': model.state_dict(),
-            # }, CHECK_POINT_PATH)
+            torch.save({
+                'epoch': j,
+                'model_state_dict': model.state_dict(),
+            }, CHECK_POINT_PATH)
 
 
         # print("%.0f - Training loss : %.3f, Validation loss : %.3f, ACC : %.3f MCC : %.3f, GAM: %.3f, GAM_LAST: %.3f" % (j+1, train_loss, val_loss, acc_score, mcc_score, gam_score, gam_last_score))

@@ -14,9 +14,9 @@ from sklearn.model_selection import train_test_split
 import pickle
 import os
 from imblearn.metrics import geometric_mean_score
-
-
-os.environ["PATH"] += os.pathsep + 'C:\\Program Files\\Graphviz\\bin'
+from corr_shap import CorrExplainer
+from shap.utils._legacy import LogitLink
+import cupy as cp
 
 #case we have a sequence of ACGT
 np.random.seed(1945)
@@ -35,7 +35,6 @@ def trainXGB(X, y):
         "eta": 0.001,
         "objective": "binary:logistic",
         "subsample": 0.5,
-        # "base_score": np.mean(y_train),
         "max_depth": 5,
         "eval_metric": "logloss",
         "max_delta_step": 5,
@@ -88,11 +87,11 @@ X_test_display_list = []
 # cnn = CondensedNearestNeighbour(random_state=42)
 # load subject cross validation
 features_reader = SubjectCrossValidation()
-features_group = "important"
+features_group = "all"
 subject_train, subject_test = features_reader.getTrainTestData(1)
 # load features
 for i in range(len(subject_train)):
-    path = "F:\\users\\prasetia\\data\\TableTennis\\Experiment_1_cooperation\\cleaned\\summary\\single_episode_features.pkl"
+    path = "F:\\users\\prasetia\\data\\TableTennis\\Experiment_1_cooperation\\cleaned\\summary\\single_combined\\single_episode_features_combined.pkl"
 
     train_subject = subject_train[i]
     test_subject = subject_test[i]
@@ -106,7 +105,7 @@ for i in range(len(subject_train)):
     # print('Resampled dataset shape %s' % Counter(y_res))
 
     X_test, y_test, _ = features_reader_test.getIndividualObservationData(display=True, features_group=features_group)
-
+    X_test_disp, _, _ = features_reader_test.getIndividualObservationData(display=True, features_group=features_group)
     # clf = BalancedRandomForestClassifier(
     #     sampling_strategy="all", replacement=True, random_state=0, criterion="entropy", max_depth=25, n_estimators=400, bootstrap=False, class_weight="balanced")
 
@@ -123,16 +122,22 @@ for i in range(len(subject_train)):
     gmean_list.append(g_mean)
 
     # compute shap
-    X = np.concatenate([X_train, X_test])
-    explainer = shap.TreeExplainer(clf)
+    # X_background = shap.kmeans(X_train, k=3).data
+    # X_background = shap.sample(X_train, nsamples=1000)
+    # clf.set_param({"device": "cuda:0"})
+    # explainer = CorrExplainer(clf.inplace_predict, X_background, sampling="gauss+empirical", link=LogitLink())
+    # shap_values = explainer.shap_values(X_test.values)
+
+    X_background = shap.sample(X_train, nsamples=500)
+    explainer = shap.TreeExplainer(clf, data=X_background, feature_perturbation="interventional")
     shap_values = explainer.shap_values(X_test)
-    shap_interaction_values = explainer.shap_interaction_values(X_test)
+    # shap_interaction_values = explainer.shap_interaction_values(X_test)
 
     # append test data
-    X_test_list.append(X_test)
+    X_test_list.append(X_test_disp)
     # append results
     shap_values_list.append(shap_values)
-    shap_interaction_list.append(shap_interaction_values)
+    # shap_interaction_list.append(shap_interaction_values)
 
 
 
@@ -153,12 +158,13 @@ print("%.3f, %.3f, %.3f" % (np.average(acc_all), np.average(mcc_all), np.average
 # # save shap
 X_test_all = pd.concat(X_test_list)
 shap_values_all = np.vstack(shap_values_list)
-shap_interaction_all = np.vstack(shap_interaction_list)
+# shap_interaction_all = np.vstack(shap_interaction_list)
 np.save(single_results_path + "x_gboost_single_shap_values_"+features_group+".npy", shap_values_all)
-np.save(single_results_path + "x_gboost_single_shap_interaction_"+features_group+".npy", shap_interaction_all)
 X_test_all.to_pickle(single_results_path + "x_gboost_single_X_test_"+features_group+".pkl")
-#
-#
+
+
+# np.save(single_results_path + "x_gboost_single_shap_interaction_"+features_group+".npy", shap_interaction_all)
+
 # # metrics
 # np.save(single_results_path + "x_gboost_single_MCC_"+features_group+".npy", mcc_all)
 # np.save(single_results_path + "x_gboost_single_confusion_matrix_"+features_group+".npy", cm_all)
